@@ -2,7 +2,7 @@
 
 Из корня репозитория. Требуется компилятор C++ с поддержкой C++17.
 
-Windows (PowerShell):
+Windows:
 
 ```powershell
 g++ -std=c++17 -Wall -Wextra src\*.cpp -o main.exe
