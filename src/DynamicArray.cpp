@@ -1,15 +1,22 @@
 #include "../include/DynamicArray.h"
 
 #include <limits>
+#include <new>
 #include <ostream>
+#include <stdexcept>
 
 DynamicArray::DynamicArray(size_t size)
-    : data_(size == 0 ? nullptr : new int[size]{}), size_(size) {}
+    : data_(nullptr), size_(size) {
+    if (size > numeric_limits<size_t>::max() / sizeof(int)) {
+        throw bad_alloc();
+    }
+    data_ = size == 0 ? nullptr : new int[size]{};
+}
 
 DynamicArray::DynamicArray(const DynamicArray& other)
     : data_(other.size_ == 0 ? nullptr : new int[other.size_]), size_(other.size_) {
     for (size_t i = 0; i < size_; ++i) {
-        data_[i] = other.data_[i];
+        data_[i] = other.data_[i];A
     }
 }
 
@@ -25,25 +32,29 @@ bool DynamicArray::validValue(int value) noexcept {
     return value >= -100 && value <= 100;
 }
 
-bool DynamicArray::set(size_t index, int value) noexcept {
-    if (index >= size_ || !validValue(value)) {
-        return false;
+void DynamicArray::set(size_t index, int value) {
+    if (index >= size_) {
+        throw out_of_range("Index is out of range");
+    }
+    if (!validValue(value)) {
+        throw invalid_argument("Value must be in range [-100, 100]");
     }
     data_[index] = value;
-    return true;
 }
 
-bool DynamicArray::get(size_t index, int& value) const noexcept {
+int DynamicArray::get(size_t index) const {
     if (index >= size_) {
-        return false;
+        throw out_of_range("Index is out of range");
     }
-    value = data_[index];
-    return true;
+    return data_[index];
 }
 
-bool DynamicArray::pushBack(int value) {
-    if (!validValue(value) || size_ >= numeric_limits<size_t>::max() / sizeof(int)) {
-        return false;
+void DynamicArray::pushBack(int value) {
+    if (!validValue(value)) {
+        throw invalid_argument("Value must be in range [-100, 100]");
+    }
+    if (size_ >= numeric_limits<size_t>::max() / sizeof(int)) {
+        throw bad_alloc();
     }
 
     int* next = new int[size_ + 1];
@@ -55,15 +66,14 @@ bool DynamicArray::pushBack(int value) {
     delete[] data_;
     data_ = next;
     ++size_;
-    return true;
 }
 
-bool DynamicArray::combine(const DynamicArray& other, int sign) noexcept {
+void DynamicArray::combine(const DynamicArray& other, int sign) {
     for (size_t i = 0; i < size_; ++i) {
         const long long right = i < other.size_ ? other.data_[i] : 0;
         const long long result = static_cast<long long>(data_[i]) + sign * right;
         if (result < numeric_limits<int>::min() || result > numeric_limits<int>::max()) {
-            return false;
+            throw overflow_error("Arithmetic result is out of int range");
         }
     }
 
@@ -71,15 +81,14 @@ bool DynamicArray::combine(const DynamicArray& other, int sign) noexcept {
         const long long right = i < other.size_ ? other.data_[i] : 0;
         data_[i] = static_cast<int>(static_cast<long long>(data_[i]) + sign * right);
     }
-    return true;
 }
 
-bool DynamicArray::add(const DynamicArray& other) noexcept {
-    return combine(other, 1);
+void DynamicArray::add(const DynamicArray& other) {
+    combine(other, 1);
 }
 
-bool DynamicArray::sub(const DynamicArray& other) noexcept {
-    return combine(other, -1);
+void DynamicArray::sub(const DynamicArray& other) {
+    combine(other, -1);
 }
 
 void DynamicArray::print(ostream& output) const {
