@@ -14,11 +14,11 @@ public:
     ~DynamicArray();
 
     size_t size() const noexcept;
-    bool set(size_t index, int value) noexcept;
-    bool get(size_t index, int& value) const noexcept;
-    bool pushBack(int value);
-    bool add(const DynamicArray& other) noexcept;
-    bool sub(const DynamicArray& other) noexcept;
+    void set(size_t index, int value);
+    int get(size_t index) const;
+    void pushBack(int value);
+    void add(const DynamicArray& other);
+    void sub(const DynamicArray& other);
     void print(ostream& output) const;
 
 private:
@@ -26,7 +26,7 @@ private:
     size_t size_;
 
     static bool validValue(int value) noexcept;
-    bool combine(const DynamicArray& other, int sign) noexcept;
+    void combine(const DynamicArray& other, int sign);
 };
 
 #endif
