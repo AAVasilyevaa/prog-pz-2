@@ -4,9 +4,6 @@
 
 Windows:
 
-
-### Windows (Git Bash)
-
 Компиляция программы:
 
 ```bash
