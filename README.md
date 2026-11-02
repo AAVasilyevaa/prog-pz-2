@@ -4,10 +4,21 @@
 
 Windows:
 
-```powershell
-g++ -std=c++17 -Wall -Wextra src\*.cpp -o main.exe
-.\main.exe
+
+### Windows (Git Bash)
+
+Компиляция программы:
+
+```bash
+g++ -std=c++17 -Wall -Wextra src/DynamicArray.cpp src/main.cpp -o main.exe
 ```
+
+Запуск программы:
+
+```bash
+./main.exe
+```
+
 
 Linux/macOS:
 
